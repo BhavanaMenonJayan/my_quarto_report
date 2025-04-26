@@ -1,0 +1,33 @@
+
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  h1, h2, h3 {
+    color: #2c3e50;
+  }
+  
+  code {
+    background-color: #f4f4f4;
+    padding: 2px 4px;
+    border-radius: 4px;
+  }
+  
+  pre {
+    background-color: #f4f4f4;
+    border-left: 4px solid #2c3e50;
+    padding: 10px;
+    overflow-x: auto;
+  }
+  
+  .plotly-graph-div {
+    margin-top: 1em;
+    margin-bottom: 2em;
+  }
+  
+  img, svg {
+    max-width: 100%;
+  }

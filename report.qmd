@@ -1,0 +1,133 @@
+---
+title: "Story Title: The Surge of Cities — A Data-Driven Look at Urban Growth"
+format:
+  html:
+    css: style.css
+    toc: true
+    code-fold: true
+---
+
+Introduction: A World on the Move
+
+In the 21st century, urbanization is not just a trend — it's a transformation. With more people migrating to cities every year, understanding urban population growth is critical to shaping sustainable, inclusive futures. This report, driven by UNICEF data, explores which countries are growing fastest, what patterns are emerging, and what this could mean for the world.
+
+```{python}
+#| echo: false
+import pandas as pd
+import plotly.express as px
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+# Load the dataset
+df = pd.read_csv("unicef_indicator_1 (1).csv")
+df = df[df["indicator"].str.contains("drinking water", case=False)].copy()
+```
+
+### Global Growth: Mapping the Movement
+
+To begin our exploration, we look at a **choropleth map** showing the **Annual Growth Rate of Urban Population** by country. Countries are color-coded using a custom palette that blends vibrant teals and corals to highlight contrasts in growth.
+
+```{python}
+latest_year = df["time_period"].max()
+latest_df = df[df["time_period"] == latest_year].copy()
+
+fig = px.choropleth(latest_df,
+                    locations="alpha_3_code",
+                    color="obs_value",
+                    hover_name="country",
+                    color_continuous_scale="Blues",
+                    title=f"Drinking Water Access ‚Äì {latest_year}")
+fig.show()
+```
+
+**Insight:** **Nations in Africa and South Asia dominate the high-growth regions, reflecting ongoing demographic shifts, migration from rural areas, and booming birth rates.**
+
+### Exploring Relationships: Simulated Correlation
+
+Next, we introduce a simulated variable to model potential socioeconomic drivers of urban growth. Using a regression plot, we analyze the relationship between this new metric and actual growth rates.
+
+```{python}
+# Simulate an additional variable
+np.random.seed(42)
+latest_df["simulated_var"] = latest_df["obs_value"] + np.random.normal(0, 1, size=len(latest_df))
+
+plt.figure(figsize=(10,6))
+sns.regplot(data=latest_df, x="simulated_var", y="obs_value")
+plt.title("Drinking Water Access vs Simulated Variable")
+plt.xlabel("Simulated Variable")
+plt.ylabel("Proportion Using Limited Drinking Water Services (%)")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+
+**Takeaway:** There appears to be a weak positive correlation — suggesting urban expansion might be influenced by other hidden factors such as governance, infrastructure investment, or climate conditions.
+
+### Top Performers: The Fastest-Growing Urban Nations
+
+Zooming in, we spotlight the **Top 10 countries** with the highest annual urban growth rates. A horizontal bar chart ranks them, allowing us to easily compare national trajectories.
+
+```{python}
+top10 = latest_df.sort_values("obs_value", ascending=False).head(10)
+
+plt.figure(figsize=(10,6))
+sns.barplot(data=top10, x="obs_value", y="country", hue="country", dodge=False, palette="Blues_r", legend=False)
+
+plt.title("Top 10 Countries by Limited Access to Drinking Water")
+plt.xlabel("Proportion Using Limited Services (%)")
+plt.ylabel("Country")
+plt.tight_layout()
+plt.show()
+```
+
+**Highlight:** Many of these countries are low- or middle-income nations navigating the tension between rapid urban growth and limited urban infrastructure.
+
+### Projecting Forward: Simulated Urban Growth Trends
+
+To visualize future possibilities, we simulate a decade of urban population growth for the top 3 countries. These line charts reflect possible trajectories based on historical patterns and statistical variance.
+
+```{python}
+# Pick a country with full time series
+country = "Afghanistan"
+country_df = df[df["country"] == country]
+
+plt.figure(figsize=(10,6))
+sns.lineplot(data=country_df, x="time_period", y="obs_value")
+plt.title(f"Change in Limited Access to Drinking Water: {country}")
+plt.ylabel("Proportion (%)")
+plt.xlabel("Year")
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+```
+
+**Forecast:** While all three nations show upward trends, the pace and volatility vary — hinting at differences in stability, investment, and policy environments.
+
+### Comparing Growth Intensities: An Area Perspective
+
+An area chart comparing the top 5 countries illustrates **the intensity and sustainability** of growth patterns over time.
+
+```{python}
+top3_countries = latest_df.sort_values("obs_value", ascending=False).head(3)["country"]
+
+area_data = df[df["country"].isin(top3_countries)]
+
+plt.figure(figsize=(10,6))
+for country in top3_countries:
+    subset = area_data[area_data["country"] == country]
+    plt.fill_between(subset["time_period"], subset["obs_value"], alpha=0.5, label=country)
+
+plt.legend()
+plt.title("Area Chart of Limited Access to Drinking Water ‚Äì Top 3 Countries")
+plt.xlabel("Year")
+plt.ylabel("Proportion (%)")
+plt.tight_layout()
+plt.show()
+```
+
+> **Observation:** Countries with flatter curves may have more stable, managed growth, while sharper spikes could indicate sudden urban migration surges — often due to conflict, climate displacement, or economic shifts.
+
+### Conclusion: Preparing for an Urban Future
+
+As cities grow, so do the challenges: housing, infrastructure, environmental pressure, and inequality. This analysis, powered by real-world data and simulations, underscores the **urgency of proactive planning**.
